@@ -2,10 +2,11 @@
 import azure.functions as func
 import json
 import requests
+import base64
 
-JIRA_URL = "https://evaluadorpoc.atlassian.net"
-AUTH_EMAIL = "evaluadorpoc@outlook.com"
-AUTH_TOKEN = "ATATT3xFfGF0NiXT8BjAGR_6LZdT-vHVPS_b2j7aJ0SQRKZiCQS53Xl957bfqK8Ps28nbaWk8LKe9BCAKZFRJX8T2b6_8Z1dbdOwbi0bReAZFuUzd24Ti6ESUKrFvugMPsff0sQeypgNyP4xzhKtIH6yKn3YSgrvC4TIxJZstGQeq1e0GwOrLnY"
+JIRA_BASE_URL = "https://evaluadorpoc.atlassian.net"
+JIRA_USER = "evaluadorpoc@outlook.com"
+JIRA_API_TOKEN = "ATATT3xFfGF0NiXT8BjAGR_6LZdT-vHVPS_b2j7aJ0SQRKZiCQS53Xl957bfqK8Ps28nbaWk8LKe9BCAKZFRJX8T2b6_8Z1dbdOwbi0bReAZFuUzd24Ti6ESUKrFvugMPsff0sQeypgNyP4xzhKtIH6yKn3YSgrvC4TIxJZstGQeq1e0GwOrLnY"
 CUSTOM_FIELD_ID = "customfield_10058"
 
 def evaluar_descripcion(texto):
