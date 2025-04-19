@@ -32,7 +32,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         }
         body = {
             "fields": {
-                "customfield_10058": f"{score}%"  # puedes cambiarlo a número si el campo lo permite
+                "customfield_10058":score  # puedes cambiarlo a número si el campo lo permite
             }
         }
 
