@@ -2,24 +2,64 @@
 import logging
 import json
 
-def main(req: func.HttpRequest) -> func.HttpResponse:
-    logging.info("📩 Webhook recibido para validar historia")
+app = func.FunctionApp()
+
+@app.function_name(name="validarHistoria")
+@app.route(route="validarHistoria", methods=["POST"])
+def validarHistoria(req: func.HttpRequest) -> func.HttpResponse:
+    logging.info("🪝 Webhook recibido para validar historia")
 
     try:
-        data = req.get_json()
-        description = data.get('descripcion', '')
+        req_body = req.get_json()
+        issue = req_body.get("issue", {})
+        fields = issue.get("fields", {})
+        description = fields.get("description", "")
 
-        if not description:
-            return func.HttpResponse("❌ Sin descripción", status_code=200)
+        score, comentario = evaluar_historia(description)
 
-        # Resultado simulado
         resultado = {
-            "score": 88,
-            "comentario": "La historia cumple bien, pero podrías precisar el objetivo ('para')."
+            "score": score,
+            "comentario": comentario
         }
 
-        return func.HttpResponse(json.dumps(resultado), status_code=200, mimetype="application/json")
+        logging.info(f"✅ Resultado: {resultado}")
 
+        return func.HttpResponse(
+            json.dumps(resultado),
+            status_code=200,
+            mimetype="application/json"
+        )
+    
     except Exception as e:
-        logging.error(str(e))
-        return func.HttpResponse("❌ Error al procesar", status_code=500)
+        logging.error(f"❌ Error: {str(e)}")
+        return func.HttpResponse(
+            "Error procesando la historia.",
+            status_code=500
+        )
+
+def evaluar_historia(texto):
+    texto = texto.lower()
+    score = 0
+    comentario = []
+
+    if "como" in texto:
+        score += 30
+    else:
+        comentario.append("Falta el rol ('como').")
+
+    if "quiero" in texto:
+        score += 30
+    else:
+        comentario.append("Falta la acción ('quiero').")
+
+    if "para" in texto:
+        score += 40
+    else:
+        comentario.append("Falta el objetivo ('para').")
+
+    if score == 100:
+        comentario = ["Historia bien redactada."]
+    else:
+        comentario = ["; ".join(comentario)]
+
+    return score, comentario[0]
