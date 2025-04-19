@@ -1,65 +1,40 @@
-﻿import azure.functions as func
-import logging
+﻿import logging
+import azure.functions as func
 import json
 
-app = func.FunctionApp()
-
-@app.function_name(name="validarHistoria")
-@app.route(route="validarHistoria", methods=["POST"])
-def validarHistoria(req: func.HttpRequest) -> func.HttpResponse:
-    logging.info("🪝 Webhook recibido para validar historia")
-
+def main(req: func.HttpRequest) -> func.HttpResponse:
     try:
-        req_body = req.get_json()
-        issue = req_body.get("issue", {})
-        fields = issue.get("fields", {})
-        description = fields.get("description", "")
+        logging.info("✅ Webhook recibido para validar historia")
+        data = req.get_json()
 
-        score, comentario = evaluar_historia(description)
+        description = data["issue"]["fields"]["description"]
+        key = data["issue"]["key"]
 
-        resultado = {
-            "score": score,
-            "comentario": comentario
-        }
+        logging.info(f"Issue key: {key}")
+        logging.info(f"Descripción recibida: {description}")
 
-        logging.info(f"✅ Resultado: {resultado}")
+        if all(p in description.lower() for p in ["como", "quiero", "para"]):
+            resultado = {
+                "key": key,
+                "valida": True,
+                "mensaje": "La historia de usuario tiene buen formato."
+            }
+        else:
+            resultado = {
+                "key": key,
+                "valida": False,
+                "mensaje": "La historia de usuario NO cumple con el formato esperado."
+            }
 
         return func.HttpResponse(
             json.dumps(resultado),
             status_code=200,
             mimetype="application/json"
         )
-    
+
     except Exception as e:
-        logging.error(f"❌ Error: {str(e)}")
+        logging.error(f"❌ Error interno: {str(e)}")
         return func.HttpResponse(
-            "Error procesando la historia.",
+            f"Error interno: {str(e)}",
             status_code=500
         )
-
-def evaluar_historia(texto):
-    texto = texto.lower()
-    score = 0
-    comentario = []
-
-    if "como" in texto:
-        score += 30
-    else:
-        comentario.append("Falta el rol ('como').")
-
-    if "quiero" in texto:
-        score += 30
-    else:
-        comentario.append("Falta la acción ('quiero').")
-
-    if "para" in texto:
-        score += 40
-    else:
-        comentario.append("Falta el objetivo ('para').")
-
-    if score == 100:
-        comentario = ["Historia bien redactada."]
-    else:
-        comentario = ["; ".join(comentario)]
-
-    return score, comentario[0]
