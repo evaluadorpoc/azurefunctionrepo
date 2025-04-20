@@ -10,12 +10,12 @@ JIRA_API_TOKEN    = "ATATT3xFfGF0NiXT8BjAGR_6LZdT-vHVPS_b2j7aJ0SQRKZiCQS53Xl957b
 CUSTOM_FIELD_ID   = "customfield_10058"
 
 def main(req: func.HttpRequest) -> func.HttpResponse:
-    logging.info("🚀 Webhook activado para prueba con PUT usando `key` lowercase")
+    logging.info("🚀 Webhook activado para prueba con PUT usando `key`, quitamos lowercase")
 
     try:
         data = req.get_json()
         issue = data["issue"]
-        key = issue["key"].lower()  # <- forzamos a minúscula
+        key = issue["key"] # <- forzamos a minúscula
 
         logging.info(f"🔑 Issue recibido con key: {key}")
 
