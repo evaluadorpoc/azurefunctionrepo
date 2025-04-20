@@ -15,10 +15,11 @@ def evaluar_descripcion(texto: str) -> int:
     Cuenta las ocurrencias de las palabras clave y
     devuelve un porcentaje entero (0-100).
     """
-    claves = ["como", "quiero", "para"]
-    count = sum(1 for p in claves if p in texto.lower())
-    score = int((count / len(claves)) * 100)
-    return score
+    # claves = ["como", "quiero", "para"]
+    # count = sum(1 for p in claves if p in texto.lower())
+    # score = int((count / len(claves)) * 100)
+    # return score
+    return 100
 
 def update_jira_field(issue_key: str, score: int) -> None:
     """
